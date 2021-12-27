@@ -175,27 +175,27 @@ def get_dataset(dataset, n_samples, model_name='', seed=0, verbose=True):
         # From https://github.com/zalandoresearch/fashion-mnist/blob/master/utils/mnist_reader.py
         lblpath = 'data/fashion-mnist/train-labels-idx1-ubyte.gz'
         if not os.path.exists(lblpath):
-            print('Cannot find %s; please add it.' % fn)
+            print('Cannot find %s; please add it.' % lblpath)
             sys.exit(1)
         with gzip.open(lblpath, 'rb') as lbpath:
             y1 = np.frombuffer(lbpath.read(), dtype=np.uint8, offset=8)
         lblpath = 'data/fashion-mnist/t10k-labels-idx1-ubyte.gz'
         if not os.path.exists(lblpath):
-            print('Cannot find %s; please add it.' % fn)
+            print('Cannot find %s; please add it.' % lblpath)
             sys.exit(1)
         with gzip.open(lblpath, 'rb') as lbpath:
             y2 = np.frombuffer(lbpath.read(), dtype=np.uint8, offset=8)
         y = np.concatenate((y1, y2))
         datapath = 'data/fashion-mnist/train-images-idx3-ubyte.gz'
         if not os.path.exists(datapath):
-            print('Cannot find %s; please add it.' % fn)
+            print('Cannot find %s; please add it.' % lblpath)
             sys.exit(1)
         with gzip.open(datapath, 'rb') as dtpath:
             X1 = np.frombuffer(dtpath.read(), dtype=np.uint8,
                                offset=16).reshape(len(y1), 784)
         datapath = 'data/fashion-mnist/t10k-images-idx3-ubyte.gz'
         if not os.path.exists(datapath):
-            print('Cannot find %s; please add it.' % fn)
+            print('Cannot find %s; please add it.' % lblpath)
             sys.exit(1)
         with gzip.open(datapath, 'rb') as dtpath:
             X2 = np.frombuffer(dtpath.read(), dtype=np.uint8,
@@ -457,9 +457,7 @@ def read_pretrained_probs(dataset, clf_type):
         model_name = clf_type.split('-')[1]
     # Initialize to empty
     cal_probs = []
-    test_probs = []
     cal_logits = None
-    test_logits = None
     # Load predicted probabilities from file
     if dataset == 'imagenet':
         d = np.load('data/imagenet/val_%s_probs.npz' % model_name)
@@ -493,7 +491,7 @@ def read_pretrained_probs(dataset, clf_type):
         # convert to probs
         sum_logit = np.sum(np.exp(cal_logits), 1)
         cal_probs = np.exp(cal_logits) / sum_logit[:, None]
-        
+
         fn = ('data/starcraft-formations-yunye/' +
               'test_features_121221/resnet18_%s_test_data.npz' % formation)
         dat = np.load(fn)
