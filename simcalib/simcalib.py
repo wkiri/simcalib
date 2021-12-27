@@ -5,7 +5,6 @@
 # Kiri Wagstaff
 
 import sys
-from collections import Counter
 import numpy as np
 import scipy
 from progressbar import ProgressBar, Bar, ETA
@@ -341,9 +340,8 @@ def calc_sim(X_test, X_cal, y_cal=None, sim_method='sim_euclid', sim=None):
 # - verbose: 0 for nothing, 1 for progress bars, 2 for per-item reporting
 #
 # Return calibrated test probs.
-def calib_sim(X_cal, y_cal, cal_probs, X_test, test_probs,
-              sim_method='cosine', nn=-1, weighted=True,
-              hh=None, seed=0, verbose=1):
+def calib_sim(X_cal, y_cal, X_test, test_probs,
+              sim_method='cosine', nn=-1, weighted=True, hh=None, verbose=1):
 
     (n_test, n_classes) = test_probs.shape
     calib_test_probs = np.zeros_like(test_probs)
@@ -631,7 +629,7 @@ def hidden_hetero(X_cal, y_cal, cal_probs, test_probs, r=0.1,
                                             random_state=seed)
             hh_clf.fit(X_cal[nbrs[p]], y_cal[nbrs[p]])
             # Ensure some model is saved
-            if rfs[-1] == None:
+            if rfs[-1] is None:
                 rfs[p] = hh_clf
             s = hh_clf.oob_score_
             if s > best_score:
