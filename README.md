@@ -270,7 +270,7 @@ representation to calibrate ResNet20 predictions:
 $ python3 experiments/eval_calib.py -d cifar10 -n 1000 -c pretrained-resnet56-resnet20 -s 0 res-cnn
 ```
 
-![Brier score plot for CIFAR10, RepVGG_A2 + ResNet20 model](plots/cifar10-cmp-brier-n1000_clfpretrained-resnet56-resnet20_seed0.png)
+![Brier score plot for CIFAR10, RepVGG_A2 + ResNet20 model](plots/cifar10-cmp-brier-n1000_clfpretrained-resnet56-resnet20_r0.1_seed0.png)
 
 
 ## Questions, bugs, and contributions
