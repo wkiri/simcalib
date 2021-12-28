@@ -230,7 +230,7 @@ $ python3 experiments/extract_from_pytorch.py -m resnet20 -d cifar10 data/cifar/
 ImageNet (using the validation set):
 
 ```Console
-$ python3 experiments/extract_from_pytorch.py -m resnet18 -d imagenet data/imagenet/val_resnet20_
+$ python3 experiments/extract_from_pytorch.py -m resnet18 -d imagenet data/imagenet/val_resnet18_
 ```
 
 Then load the corresponding files in Python:
@@ -262,7 +262,15 @@ simply evaluate calibration methods on the predictions:
 $ python3 experiments/eval_calib.py -d cifar10 -n 1000 -c pretrained-repvgg_a2 -s 0 res-cnn
 ```
 
-![Brier score plot for CIFAR10, repvgg_a2 model](plots/cifar10-cmp-brier-n200_clfpretrained-repvgg_a2_w10_seed0.png)
+Finally, you can use one network's learned (latent) representation to
+provide the basis for calibrating another.  To use ResNet56's
+representation to calibrate ResNet20 predictions:
+
+```Console
+$ python3 experiments/eval_calib.py -d cifar10 -n 1000 -c pretrained-resnet56-resnet20 -s 0 res-cnn
+```
+
+![Brier score plot for CIFAR10, RepVGG_A2 + ResNet20 model](plots/cifar10-cmp-brier-n1000_clfpretrained-resnet56-resnet20_seed0.png)
 
 
 ## Questions, bugs, and contributions
