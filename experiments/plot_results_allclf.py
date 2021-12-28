@@ -63,7 +63,6 @@ def main(res_dir, dataset, n_cal, prob_radius, write_tables=False):
         # assuming the number of trials is the same
         # for all classifiers, methods, and seeds
         n_trials = len(res[clf_type]['uncal']['acc'])
-        n_test_samples = len(res[clf_type]['uncal']['test_probs'][0])
 
         # Average across seeds
         for c in calib_methods:
@@ -122,7 +121,7 @@ def main(res_dir, dataset, n_cal, prob_radius, write_tables=False):
         texf.write('  \\begin{tabular}{l|c|%s|%s} \n' %
                    ('c' * (len(calib_methods) - n_sc_methods - 1),
                     'c' * n_sc_methods))
-        
+
     for m in metrics:
         ylab = 'Brier score' if m == 'brier' else 'Accuracy'
         if write_tables:
@@ -213,7 +212,7 @@ def main(res_dir, dataset, n_cal, prob_radius, write_tables=False):
                 alg += ['%s\n(%.2f)' % ('$\\rightarrow$'.join(clf_type.split('-')[1:]),
                                         np.mean(np.array(res[clf_type]['swc']['test_HH'])))]
             else:
-                alg += ['%s\n(%.2f)' % (clf_type, 
+                alg += ['%s\n(%.2f)' % (clf_type,
                                         np.mean(np.array(res[clf_type]['swc']['test_HH'])))]
 
         pl.xticks(range(len(res)), alg, fontsize=10.5

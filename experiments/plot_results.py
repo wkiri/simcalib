@@ -108,7 +108,7 @@ def read_results(metrics, resfilebase, hh_thresh=0, verbose=True):
             if 'swc' not in calib_methods:
                 if 'swc' in r:  # skip incomplete results
                     res['swc']['test_HH'] += [np.mean(r['swc']['test_HH'])]
-                
+
     return res
 
 
@@ -425,8 +425,9 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--clf_type', default='DT',
                         help='Classifier type (default: %(default)s)')
     parser.add_argument('-r', '--prob_radius', type=float, default=0.1,
-                        help='Radius in the probability simplex to define hidden heterogeneity'
-                        ' neighborhood (default: %(default)s)')
+                        help='Radius in the probability simplex to define'
+                        ' hidden heterogeneity neighborhood'
+                        ' (default: %(default)s)')
     parser.add_argument('-p', '--per_class', default=False, action='store_true',
                         help='Generate per-class plot (default: %(default)s)')
 
