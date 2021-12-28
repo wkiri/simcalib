@@ -167,7 +167,7 @@ Plot of Brier score (lower is better):
 
 This script also generates a rejection curve (higher is better):
 
-![Rejection curve for mnist-4v9, DT model](plots/reject-mnist-4v9-n1000_clfDT_0.1.png)
+![Rejection curve for mnist-4v9, DT model](plots/reject-mnist-4v9-n1000_clfDT_r0.1.png)
 
 Run 10 trials with a different classifier (random forest):
 
@@ -203,7 +203,7 @@ predicted vs. actual (estimated) probability of class 1.  Multi-class
 problems plot the most likely class's probability vs. estimated
 accuracy.
 
-![Reliability curve for mnist-4v9, DT model](plots/probs-mnist-4v9-n1000_clfDT_seed0.png)
+![Reliability curve for mnist-4v9, DT model](plots/probs-mnist-4v9-n1000_clfDT_r0.1_seed0.png)
 
 ### Calibrating predictions from pre-trained models
 
