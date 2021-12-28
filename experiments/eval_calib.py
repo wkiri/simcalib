@@ -9,7 +9,6 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as pl
-from progressbar import Counter as pCounter
 from scipy import ndimage
 from sklearn.base import clone
 from sklearn.metrics import accuracy_score
@@ -34,10 +33,10 @@ def eval_calib(cal_probs, test_probs, classes,
                X_cal, y_cal, X_test, y_test,
                prob_radius, sim_method,
                resfile, clf=None, cal_logits=None, test_logits=None,
-               seed=0, verbose=1):
+               verbose=1):
 
     res = {}
-    # Load previous results, if available 
+    # Load previous results, if available
     if os.path.exists(resfile):
         with open(resfile, 'rb') as inf:
             print(' Loading results from %s' % resfile)
@@ -217,12 +216,16 @@ def main(res_dir, dataset, n_cal, clf_type,
         os.mkdir(res_dir)
 
     if prob_radius < 0:
-        raise ValueError('Error: prob_radius (%f) must be >= 0' % prob_radius)
+        raise ValueError('prob_radius (%f) must be >= 0' % prob_radius)
 
     if n_cal < 1:
-        raise ValueError('Error: n_cal (%d) must be > 0' % n_cal)
+        raise ValueError('n_cal (%d) must be > 0' % n_cal)
 
-    #(X, y, ids) = get_dataset(dataset, n_cal, model_name=clf_type)
+    if (n_rotate > 0 and dataset != 'fashion-mnist' and
+        not dataset.startswith('mnist')):
+        raise ValueError('can only rotate mnist or fashion-mnist data sets.')
+
+    # Use all items (-1) for some data sets, and 10k for others
     if (dataset in ['imagenet', 'msl'] or
         dataset.startswith('starcraft-formations') or
         dataset == 'covid'):
@@ -268,7 +271,7 @@ def main(res_dir, dataset, n_cal, clf_type,
             X_train, y_train = np.array(()), np.array(())
             X_cal, y_cal = X[:300], y[:300]
             X_test, y_test = X[300:], y[300:]
-            
+
             cal_probs = ret['cal_probs']
             cal_logits = ret['cal_logits']
             test_probs = ret['test_probs']
@@ -278,7 +281,7 @@ def main(res_dir, dataset, n_cal, clf_type,
             X_train, y_train = np.array(()), np.array(())
             X_cal, y_cal = X[:1800], y[:1800]
             X_test, y_test = X[1800:], y[1800:]
-            
+
             cal_probs = ret['cal_probs']
             cal_logits = ret['cal_logits']
             test_probs = ret['test_probs']
@@ -302,7 +305,6 @@ def main(res_dir, dataset, n_cal, clf_type,
             te_size = 10000 if dataset == 'imagenet' else 5000
             sss = StratifiedShuffleSplit(n_splits=1, test_size=te_size,
                                          random_state=seed)
-            #sss = StratifiedShuffleSplit(n_splits=1, test_size=100,
             # There is only one but this generator wants a loop
             for cal_idx, test_idx in sss.split(X, y):
                 X_cal = X[cal_idx]
@@ -318,11 +320,6 @@ def main(res_dir, dataset, n_cal, clf_type,
             y_cal = y_cal[:n_cal]
             cal_probs = cal_probs[:n_cal]
             cal_logits = cal_logits[:n_cal]
-            # First 100 test items
-            #X_test = X_test[:100]
-            #y_test = y_test[:100]
-            #test_probs = test_probs[:100]
-            #test_logits = test_logits[:100]
 
         # No training data
         X_train, y_train = np.array(()), np.array(())
@@ -342,7 +339,7 @@ def main(res_dir, dataset, n_cal, clf_type,
                              random_state=seed)
         X_cal = X_cal[:n_cal]
         y_cal = y_cal[:n_cal]
-        
+
     file_basename = 'n%d_clf%s_r%s_seed%d' % \
         (n_cal, clf_type, prob_radius, seed)
     resfilebase = os.path.join(res_dir, 'res-%s-%s.pkl' %
@@ -364,7 +361,7 @@ def main(res_dir, dataset, n_cal, clf_type,
         (dataset.startswith('mnist') or
          dataset == 'fashion-mnist')):
         X_test = shift_test_set(X_test, n_rotate)
-    
+
     # 0. Scale the data
     scaler = StandardScaler()
     if clf_type.startswith('pretrained'):
@@ -393,8 +390,7 @@ def main(res_dir, dataset, n_cal, clf_type,
                      X_cal, y_cal, X_test, y_test,
                      prob_radius, sim_method,
                      resfilebase, clf=clf,
-                     cal_logits=cal_logits, test_logits=test_logits,
-                     seed=seed)
+                     cal_logits=cal_logits, test_logits=test_logits)
 
     print('\nSummary:')
     for m in res.keys():
@@ -437,7 +433,8 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--clf_type', default='DT',
                         help='Classifier type (default: %(default)s)')
     parser.add_argument('-r', '--prob_radius', type=float, default=0.1,
-                        help='Radius in the probability simplex to define hidden heterogeneity'
+                        help='Radius in the probability simplex to'
+                        ' define hidden heterogeneity'
                         ' neighborhood (default: %(default)s)')
     parser.add_argument('-m', '--sim_method', default='RFprox',
                         choices=['cosine', 'rbf', 'RFprox', 'Isoprox', 'all_one',
