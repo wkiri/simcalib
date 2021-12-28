@@ -14,7 +14,6 @@ calib_info = {'uncal': ('Uncalibrated', 'red', 'o', 'Uncal.'),
               'sba': ('SBA', 'darkorchid', 'd', 'SBA'),
               'swc': ('SWC', 'dodgerblue', 'v', 'SWC'),
               'swc-hh': ('SWC-HH', 'limegreen', '>', 'SWC-HH'),
-              'ts-swc': ('TS+SWC', 'salmon', '*', 'TS+SWC'),
               # Platt (or TS), then SWC
               'platt-swc': ('Platt+SWC', 'limegreen', '*', 'Platt+SWC'),
               'ts-swc': ('TS+SWC', 'limegreen', '*', 'TS+SWC'),
