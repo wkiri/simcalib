@@ -1,9 +1,12 @@
 # Similarity-based Calibration
 
 This repository contains an implementation of similarity-based
-calibration methods.  These methods update predictions (probabilities)
-made by classification models while leveraging local similarity in
-feature space.  They include:
+calibration methods.  The goal is to improve the calibration of
+a classifier's predicted class probabilities; well-calibrated
+predictions are those that match the true class probabilities.
+The calibration methods in this reporitory update the predictions
+(probabilities) while leveraging local similarity in feature space.
+They include:
 1. Similarity-Weighted Calibration (SWC)
 2. Similarity-Weighted Calibration with Hidden Heterogeneity (SWC-HH)
 
@@ -58,7 +61,8 @@ Then calibrate the probabilities with `calib_sim()`:
 
 ```Python
 >>> import simcalib
->>> test_probs, sim_mass = simcalib.calib_sim(X_cal_aug, y_cal, cal_probs, X_test_aug, test_probs)
+>>> test_probs_calib, sim_mass = simcalib.calib_sim(X_cal_aug, y_cal, 
+    cal_probs, X_test_aug, test_probs)
 ```
 
 Arguments:
@@ -68,10 +72,12 @@ Arguments:
 * `X_test_aug`: `nt`x`(d + c)` numpy array of test items
 * `test_probs`: `nt`x`c` numpy array of predicted probabilities (per item, per class)
 
-The `sim_mass` array contains a similarity mass for each test item
-that indicates how much of the calibration set was relevant for
-calibrating that item.  Low values can indicate outliers or other
-items for which the calibration may be less reliable.
+Return values:
+* `test_probs_calib`: `nt`x`c` numpy array (the calibrated version of `test_probs`)
+* `sim_mass`: `nt`x1 numpy array with a similarity mass for each test item 
+  that indicates how much of the calibration set was relevant for
+  calibrating that item.  Low values can indicate outliers or other
+  items for which the calibration may be less reliable.
 
 ## Using SWC-HH for calibration
 
@@ -82,7 +88,8 @@ original feature space) for each item using:
 
 ```Python
 >>> import simcalib
->>> hh, _, _ = simcalib.hidden_hetero(X_cal, y_cal, cal_probs, test_probs, r=0.1)
+>>> hh, n_neighbors, rfs = simcalib.hidden_hetero(X_cal, y_cal, 
+    cal_probs, test_probs, r=0.1)
 ```
 
 Arguments (given `nt` test items, `nc` calibration items, `c` classes, `d` dimensionality):
@@ -92,19 +99,17 @@ Arguments (given `nt` test items, `nc` calibration items, `c` classes, `d` dimen
 * `test_probs`: `nt`x`c` numpy array of predicted probabilities (per item, per class)
 * `r`: float >= 0 indicating probability simplex radius for neighborhood
 
-The larger the (average) `hh` value is, the more likely that
-SWC/SWC-HH will out-perform global calibration methods.  The
-neighborhood radius `r` (in the probability simplex) influences the
-granularity of the hidden heterogeneity assessment.
-
-The second and third return values provide additional information that
-is not needed to perform calibration but may provide additional
-insights into individual items.
-* The return value `n_neighbors` is a list that indicates, for each
-test item, the number of items in the calibration set that fell within
-probability radius `r` for that test item.
-* The return value `rfs` is a list that contains, for each item, the
-local random forest that was used to estimate `hh` for that item.
+Return values:
+* `hh`: `nt`x` numpy array of hidden heterogeneity values for the 
+  test set.  The larger the (average) `hh` value is, the more likely 
+  that SWC/SWC-HH will out-perform global calibration methods.  The
+  neighborhood radius `r` (in the probability simplex) influences the
+  granularity of the hidden heterogeneity assessment.
+* `n_neighbors`: a list that indicates, for each test item, 
+  the number of items in the calibration set that fell within
+  probability radius `r` for that test item.
+* `rfs`: is a list that contains, for each item, the local 
+  random forest that was used to estimate `hh` for that item.
 
 Then calibrate the probabilities with `calib_sim()` using `hh` as an
 additional input:
@@ -112,7 +117,7 @@ additional input:
 ```Python
 >>> import simcalib
 >>> test_probs, sim_mass = simcalib.calib_sim(X_cal_aug, y_cal,
-cal_probs, X_test_aug, test_probs, hh=hh)
+    cal_probs, X_test_aug, test_probs, hh=hh)
 ```
 
 ## Experiments
