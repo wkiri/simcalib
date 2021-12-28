@@ -182,7 +182,7 @@ types:
 $ python3 experiments/plot_results_allclf.py -d mnist-4v9 -n 1000 res-test
 ```
 
-![Brier score plot for mnist-4v9, DT and RF models](plots/summary-mnist-4v9-brier-n1000-r0.1.png)
+![Brier score plot for mnist-4v9, DT and RF models](plots/summary-mnist-4v9-brier-n1000_r0.1.png)
 
 Generate a reliability plot (using kernel density estimation, not
 binning) for a single trial:
