@@ -148,7 +148,7 @@ def eval_calib(cal_probs, test_probs, classes,
                 test_probs_scaled = scaler.transform(test_probs_in)
 
                 if m == 'swc-hh':
-                    # Calcul[ate hidden heterogeneity.
+                    # Calculate hidden heterogeneity.
                     if 'swc' not in res:
                         res['swc'] = {}
                     if 'test_HH' not in res['swc']:
