@@ -178,13 +178,18 @@ def calc_sim(X_test, X_cal, y_cal=None, sim_method='sim_euclid', sim=None):
     >>> np.random.seed(0)
     >>> X_cal = np.random.rand(5, 3)
     >>> X_test = np.random.rand(2, 3)
-    >>> calc_sim(X_test, X_cal)
-    Euclid. sim: min -1.277106, max -0.341592
-    array([[-0.86543108, -0.63809564, -0.94847268, -0.88049546, -1.27710576],
-           [-0.46672837, -0.60361979, -0.34159159, -0.6034734 , -0.93324293]])
+    >>> calc_sim(X_test, X_test)
+    Euclid. sim: min 0.000000, max 1.000000
+    array([[1., 0.],
+           [0., 1.]])
 
+    >>> calc_sim(X_test, X_cal)
+    Euclid. sim: min 0.783021, max 2.927473
+    array([[1.15549352, 1.56716319, 1.05432663, 1.1357242 , 0.78302051],
+           [2.14257383, 1.65667199, 2.92747253, 1.65707387, 1.07153236]])
+    
     >>> calc_sim(X_test, X_cal, sim_method='sim_euclid-1NN')
-    Euclid. sim: min -1.277106, max -0.341592
+    Euclid. sim: min 0.783021, max 2.927473
     array([[0., 1., 0., 0., 0.],
            [0., 0., 1., 0., 0.]])
 
@@ -291,7 +296,14 @@ def calc_sim(X_test, X_cal, y_cal=None, sim_method='sim_euclid', sim=None):
     elif sim_method.startswith('sim_euclid'):
         # Inverted Euclidean distance (to yield similarity)
         dist = euclidean_distances(X_test, X_cal)
-        sim = -dist
+        #sim = -dist
+        # sklearn handles this by checking if any distances are 0
+        # and if so, sets sim to 1.0 for those items and zero elsewhere
+        with np.errstate(divide='ignore'):
+            sim = 1.0 / dist
+        inf_mask = np.isinf(sim)
+        inf_row = np.any(inf_mask, axis=1)
+        sim[inf_row] = inf_mask[inf_row]
         print('Euclid. sim: min %f, max %f' % (np.min(sim), np.max(sim)))
 
     elif sim_method.startswith('rbf'):
@@ -400,7 +412,8 @@ def calib_sim(X_cal, y_cal, X_test, test_probs,
 
         for c in range(n_classes):
             if weighted:
-                calib_test_probs[i, c] = np.sum((y_cal[nns] == c) * sim_i[nns])
+                calib_test_probs[i, c] = \
+                    np.sum((y_cal[nns] == c) * sim_i[nns]) / np.sum(sim_i[nns])
             else:
                 calib_test_probs[i, c] = np.mean(y_cal[nns] == c)
 
