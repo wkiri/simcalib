@@ -154,7 +154,8 @@ def get_dataset(dataset, n_samples, model_name='', seed=0, verbose=True):
                                  (n_samples, len(y)))
             ids = np.where(use)[0]
             if n_samples > -1:
-                keep = np.random.choice(range(len(y)), n_samples)
+                keep = np.random.choice(range(len(y)), n_samples,
+                                        replace=False)
                 X = X[keep,:]
                 y = y[keep]
                 ids = ids[keep]
@@ -204,7 +205,7 @@ def get_dataset(dataset, n_samples, model_name='', seed=0, verbose=True):
         ids = np.arange(len(y))
         if n_samples > -1:
             orig_samples = len(y)
-            keep = np.random.choice(range(len(y)), n_samples)
+            keep = np.random.choice(range(len(y)), n_samples, replace=False)
             X = X[keep,:]
             y = y[keep]
             ids = ids[keep]
@@ -232,7 +233,7 @@ def get_dataset(dataset, n_samples, model_name='', seed=0, verbose=True):
             raise ValueError('Cannot get %d from %d examples.' %
                              (n_samples, Xy.shape[0]))
         if n_samples > -1:
-            keep = np.random.choice(range(len(Xy)), n_samples)
+            keep = np.random.choice(range(len(Xy)), n_samples, replace=False)
             Xy = Xy[keep]
             print('Using %d random samples.' % n_samples)
         X   = Xy[:, :-2]
@@ -291,7 +292,7 @@ def get_dataset(dataset, n_samples, model_name='', seed=0, verbose=True):
             raise ValueError('Cannot get %d from %d examples.' %
                              (n_samples, len(y)))
         if n_samples > -1:
-            keep = np.random.choice(range(len(y)), n_samples)
+            keep = np.random.choice(range(len(y)), n_samples, replace=False)
             X = X[keep]
             y = y[keep]
             ids = ids[keep]
@@ -346,7 +347,7 @@ def get_dataset(dataset, n_samples, model_name='', seed=0, verbose=True):
         y = np.array(y)
         ids = np.array(ids)
         if n_samples > -1:
-            keep = np.random.choice(range(len(y)), n_samples)
+            keep = np.random.choice(range(len(y)), n_samples, replace=False)
             X = X[keep]
             y = y[keep]
             ids = ids[keep]
