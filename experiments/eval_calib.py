@@ -25,7 +25,7 @@ from calib import calib_info
 # Binary problems will omit TS, and multi-class problems will omit Platt.
 #calib_methods = ['uncal', 'retrain', 'platt', 'ts', 'hist', 'sba', 'swc', 'swc-hh']
 calib_methods = ['uncal', 'iso', 'platt', 'ts',
-                 'hist', 'sba', 'swc', 'swc-hh']
+                 'hist', 'sbaw', 'swc', 'swc-hh']
 
 
 # Evaluate all calibration methods in the calib_methods list.
@@ -125,6 +125,17 @@ def eval_calib(cal_probs, test_probs, classes,
                     calib_sim(np.hstack((X_cal, cal_probs)), y_cal,
                               np.hstack((X_test, test_probs)), test_probs,
                               nn=10, sim_method='sim_euclid', weighted=False,
+                              verbose=verbose)
+
+            elif m == 'sbaw':
+                # Similarity-binning averaging (Bella et al., 2009)
+                # with (inverted) Euclidean distance for similarity
+                # in augmented feature space with 10 nearest neighbors
+                # (averaged, with similarity-based weighting).
+                res[m]['test_probs'], res[m]['sim_mass'] = \
+                    calib_sim(np.hstack((X_cal, cal_probs)), y_cal,
+                              np.hstack((X_test, test_probs)), test_probs,
+                              nn=10, sim_method='sim_euclid', weighted=True,
                               verbose=verbose)
 
             elif m in ['swc', 'platt-swc', 'ts-swc', 'swc-hh']:

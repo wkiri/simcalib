@@ -13,6 +13,7 @@ calib_info = {'uncal': ('Uncalibrated', 'red', 'o', 'Uncal.'),
               'scalebin': ('Platt binning', 'brown', '<', 'Scale bin'),
               'retrain': ('Retrain', 'pink', 's', 'Retrain'),
               'sba': ('SBA', 'darkorchid', 'd', 'SBA'),
+              'sbaw': ('SBAW', 'purple', 'd', 'SBA-10'), # weighted
               'swc': ('SWC', 'dodgerblue', 'v', 'SWC'),
               'swc-hh': ('SWC-HH', 'limegreen', '>', 'SWC-HH'),
               # Platt (or TS), then SWC
