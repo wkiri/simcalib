@@ -24,7 +24,7 @@ from calib import calib_info
 # Include both TS and Platt in this list.
 # Binary problems will omit TS, and multi-class problems will omit Platt.
 #calib_methods = ['uncal', 'retrain', 'platt', 'ts', 'hist', 'sba', 'swc', 'swc-hh']
-calib_methods = ['uncal', 'iso', 'platt', 'ts',
+calib_methods = ['uncal', 'platt', 'ts', 'iso',
                  'hist', 'sbaw', 'swc', 'swc-hh']
 
 
@@ -84,7 +84,7 @@ def eval_calib(cal_probs, test_probs, classes,
                 # Have to do each class separately
                 res[m]['test_probs'] = np.copy(test_probs)
                 for c in range(cal_probs.shape[1]):
-                    iso_reg.fit(cal_probs[:, c], y_cal)
+                    iso_reg.fit(cal_probs[:, c], y_cal == c)
                     res[m]['test_probs'][:, c] = \
                         iso_reg.predict(test_probs[:, c])
                 # Normalize
