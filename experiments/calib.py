@@ -8,6 +8,7 @@
 calib_info = {'uncal': ('Uncalibrated', 'red', 'o', 'Uncal.'),
               'platt': ('Platt scaling', 'brown', '^', 'Platt'),
               'ts': ('Temp. scaling', 'brown', '^', 'TS'),
+              'iso': ('Isotonic reg.', 'maroon', 'P', 'Iso Reg'),
               'hist': ('Hist. binning', 'sandybrown', '>', 'Hist bin'),
               'scalebin': ('Platt binning', 'brown', '<', 'Scale bin'),
               'retrain': ('Retrain', 'pink', 's', 'Retrain'),

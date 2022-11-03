@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as pl
 from scipy import ndimage
 from sklearn.base import clone
+from sklearn.isotonic import IsotonicRegression
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from sklearn.preprocessing import StandardScaler
@@ -22,7 +23,9 @@ from calib import calib_info
 
 # Include both TS and Platt in this list.
 # Binary problems will omit TS, and multi-class problems will omit Platt.
-calib_methods = ['uncal', 'platt', 'ts', 'hist', 'sba', 'swc', 'swc-hh']
+#calib_methods = ['uncal', 'retrain', 'platt', 'ts', 'hist', 'sba', 'swc', 'swc-hh']
+calib_methods = ['uncal', 'iso', 'platt', 'ts',
+                 'hist', 'sba', 'swc', 'swc-hh']
 
 
 # Evaluate all calibration methods in the calib_methods list.
@@ -74,6 +77,21 @@ def eval_calib(cal_probs, test_probs, classes,
                         cal_probs, y_cal, len(classes),
                         test_probs, optim='nll')
 
+            elif m == 'iso':
+                # Calibrate with isotonic regression
+                # See https://scikit-learn.org/stable/modules/calibration.html#multiclass-support
+                iso_reg = IsotonicRegression(out_of_bounds='clip')
+                # Have to do each class separately
+                res[m]['test_probs'] = np.copy(test_probs)
+                for c in range(cal_probs.shape[1]):
+                    iso_reg.fit(cal_probs[:, c], y_cal)
+                    res[m]['test_probs'][:, c] = \
+                        iso_reg.predict(test_probs[:, c])
+                # Normalize
+                row_sums = res[m]['test_probs'].sum(axis=1)
+                res[m]['test_probs'] = res[m]['test_probs'] / \
+                    row_sums[:, np.newaxis]
+
             elif m == 'hist':
                 # Calibrate with histogram binning (From Kumar et al.)
                 # Use 100 bins if possible, or if not,
@@ -99,7 +117,7 @@ def eval_calib(cal_probs, test_probs, classes,
                 res[m]['test_probs'] = c.calibrate(test_probs)
 
             elif m == 'sba':
-                # Similarity-binning averaging (Bella et al., 2012)
+                # Similarity-binning averaging (Bella et al., 2009)
                 # with (inverted) Euclidean distance for similarity
                 # in augmented feature space with 10 nearest neighbors
                 # (averaged, no similarity-based weighting).
