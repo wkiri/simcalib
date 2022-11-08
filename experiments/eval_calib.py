@@ -87,6 +87,10 @@ def eval_calib(cal_probs, test_probs, classes,
                     iso_reg.fit(cal_probs[:, c], y_cal == c)
                     res[m]['test_probs'][:, c] = \
                         iso_reg.predict(test_probs[:, c])
+                # iso_reg may predict "inf", esp. if test_probs are
+                # very small.  Catch and fix that here.
+                inf_vals = np.isinf(res[m]['test_probs'])
+                res[m]['test_probs'][inf_vals] = 0
                 # Normalize
                 row_sums = res[m]['test_probs'].sum(axis=1)
                 res[m]['test_probs'] = res[m]['test_probs'] / \
