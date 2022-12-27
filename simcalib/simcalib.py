@@ -178,16 +178,12 @@ def calc_sim(X_test, X_cal, y_cal=None, sim_method='sim_euclid', sim=None):
     >>> np.random.seed(0)
     >>> X_cal = np.random.rand(5, 3)
     >>> X_test = np.random.rand(2, 3)
-    >>> calc_sim(X_test, X_test)
-    Euclid. sim: min 0.000000, max 1.000000
-    array([[1., 0.],
-           [0., 1.]])
 
     >>> calc_sim(X_test, X_cal)
     Euclid. sim: min 0.783021, max 2.927473
     array([[1.15549352, 1.56716319, 1.05432663, 1.1357242 , 0.78302051],
            [2.14257383, 1.65667199, 2.92747253, 1.65707387, 1.07153236]])
-    
+
     >>> calc_sim(X_test, X_cal, sim_method='sim_euclid-1NN')
     Euclid. sim: min 0.783021, max 2.927473
     array([[0., 1., 0., 0., 0.],
@@ -302,6 +298,12 @@ def calc_sim(X_test, X_cal, y_cal=None, sim_method='sim_euclid', sim=None):
         with np.errstate(divide='ignore'):
             sim = 1.0 / dist
         inf_mask = np.isinf(sim)
+        # But this should never happen in our experiments, so:
+        if np.sum(inf_mask) > 0:
+            print('Error: duplicates between test and cal sets?')
+            dup = np.where(inf_mask)
+            print(dup)
+            sys.exit()
         inf_row = np.any(inf_mask, axis=1)
         sim[inf_row] = inf_mask[inf_row]
         print('Euclid. sim: min %f, max %f' % (np.min(sim), np.max(sim)))
